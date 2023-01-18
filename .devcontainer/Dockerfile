@@ -19,18 +19,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-[package]
-name = "charted-sdk"
-description = "🐻‍❄️📦 Rust SDK library for Noelware's Charts Platform"
-homepage = "https://charts.noelware.org/docs/rust-sdk/current"
-version = "0.1.0"
-edition = "2021"
-licenses = ["MIT"]
-authors = ["Noelware Team <team@noelware.org>", "Noel <cutie@floofy.dev>"]
+FROM ghcr.io/auguwu/coder-images/rust:latest
 
-[dependencies]
-log = "0.4.17"
-reqwest = { version = "0.11.13", features = ["json"] }
-serde = { version = "1.0.152", features = ["derive"] }
-serde_json = "1.0.91"
-thiserror = "1.0.38"
+ENV USERNAME=noel
+USER root
+
+ENV DEBIAN_FRONTEND=noninterative
+RUN apt update && apt upgrade -y && apt install -y libssl-dev pkg-config
+
+USER ${USERNAME}
+RUN rustup component add clippy

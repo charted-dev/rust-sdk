@@ -32,5 +32,5 @@ authors = ["Noelware Team <team@noelware.org>", "Noel <cutie@floofy.dev>"]
 log = "0.4.17"
 reqwest = { version = "0.11.14", features = ["json"] }
 serde = { version = "1.0.152", features = ["derive"] }
-serde_json = "1.0.91"
+serde_json = "1.0.92"
 thiserror = "1.0.38"

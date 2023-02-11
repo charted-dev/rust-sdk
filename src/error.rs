@@ -19,26 +19,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! ## charted-server for Rust
-//!
-//!> *Rust SDK library for Noelware's Charts Platform*
-//!
-//! The **charted** crate is used to faciliate API calls to [charted-server](https://charts.noelware.org/docs/server/current),
-//! this library was mainly created for the [Helm plugin](https://github.com/charted-dev/helm-plugin), but made public for everyone
-//! to use when consuming the API.
-//!
-//! Read the [`APIClient`] struct for more information on how to use this struct to make requests
-//! to the API server.
-//!
-//! [`APIClient`]: struct.APIClient.html
+use thiserror::Error;
 
-pub mod auth;
-pub mod models;
+use crate::models::ApiError;
 
-mod builder;
-mod client;
-mod error;
+pub type Result<T> = std::result::Result<T, Error>;
 
-pub use builder::*;
-pub use client::*;
-pub use error::*;
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Unknown error: {0}")]
+    Unknown(#[from] Box<dyn std::error::Error>),
+
+    #[error("YAML serialization error: {0}")]
+    YamlSerialization(#[from] serde_yaml::Error),
+
+    #[error("JSON serialization error: {0}")]
+    JsonSerialization(#[from] serde_json::Error),
+
+    #[error("Request error: {0}")]
+    Reqwest(#[from] reqwest::Error),
+
+    #[error("API server error: {errors:?}")]
+    APIServer { errors: Vec<ApiError> },
+
+    #[error("{0}")]
+    String(String),
+}

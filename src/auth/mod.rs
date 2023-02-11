@@ -19,26 +19,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! ## charted-server for Rust
-//!
-//!> *Rust SDK library for Noelware's Charts Platform*
-//!
-//! The **charted** crate is used to faciliate API calls to [charted-server](https://charts.noelware.org/docs/server/current),
-//! this library was mainly created for the [Helm plugin](https://github.com/charted-dev/helm-plugin), but made public for everyone
-//! to use when consuming the API.
-//!
-//! Read the [`APIClient`] struct for more information on how to use this struct to make requests
-//! to the API server.
-//!
-//! [`APIClient`]: struct.APIClient.html
+mod api_key;
+mod basic;
+mod session_token;
 
-pub mod auth;
-pub mod models;
+use std::fmt::{Debug, Formatter, Result};
 
-mod builder;
-mod client;
-mod error;
+pub use api_key::*;
+pub use basic::*;
+pub use session_token::*;
 
-pub use builder::*;
-pub use client::*;
-pub use error::*;
+/// The trait for implementing an authentication strategy. It is not recommended to build
+/// your own strategy unless you have forked [charted-server](https://github.com/charted-dev/charted)
+/// and you wish to use your own authentication strategy, then that's completely ok.
+pub trait AuthStrategy {
+    /// Represents the prefix to use when building the `Authorization` header.
+    fn prefix(&self) -> String;
+
+    /// The header value to use.
+    fn value(&self) -> String;
+}
+
+impl Debug for dyn AuthStrategy {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "dyn AuthStrategy")?;
+        Ok(())
+    }
+}

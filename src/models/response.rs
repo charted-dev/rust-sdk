@@ -19,26 +19,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! ## charted-server for Rust
-//!
-//!> *Rust SDK library for Noelware's Charts Platform*
-//!
-//! The **charted** crate is used to faciliate API calls to [charted-server](https://charts.noelware.org/docs/server/current),
-//! this library was mainly created for the [Helm plugin](https://github.com/charted-dev/helm-plugin), but made public for everyone
-//! to use when consuming the API.
-//!
-//! Read the [`APIClient`] struct for more information on how to use this struct to make requests
-//! to the API server.
-//!
-//! [`APIClient`]: struct.APIClient.html
+use std::fmt::{Debug, Display, Formatter, Result};
 
-pub mod auth;
-pub mod models;
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct APIResponse<T>
+where
+    T: Debug,
+{
+    pub success: bool,
 
-mod builder;
-mod client;
-mod error;
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub data: Option<T>,
 
-pub use builder::*;
-pub use client::*;
-pub use error::*;
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub errors: Option<Vec<ApiError>>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ApiError {
+    pub code: String,
+    pub message: String,
+}
+
+impl Display for ApiError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "ApiError[{}]: {}", self.code, self.message)?;
+        Ok(())
+    }
+}

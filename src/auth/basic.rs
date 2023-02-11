@@ -19,26 +19,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! ## charted-server for Rust
-//!
-//!> *Rust SDK library for Noelware's Charts Platform*
-//!
-//! The **charted** crate is used to faciliate API calls to [charted-server](https://charts.noelware.org/docs/server/current),
-//! this library was mainly created for the [Helm plugin](https://github.com/charted-dev/helm-plugin), but made public for everyone
-//! to use when consuming the API.
-//!
-//! Read the [`APIClient`] struct for more information on how to use this struct to make requests
-//! to the API server.
-//!
-//! [`APIClient`]: struct.APIClient.html
+use base64::{engine::general_purpose, Engine};
 
-pub mod auth;
-pub mod models;
+use super::AuthStrategy;
 
-mod builder;
-mod client;
-mod error;
+pub struct BasicAuthStrategy {
+    username: String,
+    password: String,
+}
 
-pub use builder::*;
-pub use client::*;
-pub use error::*;
+impl BasicAuthStrategy {
+    /// Creates a new [`BasicAuthStrategy`] with a username and password.
+    pub fn new(username: impl Into<String>, password: impl Into<String>) -> BasicAuthStrategy {
+        BasicAuthStrategy {
+            username: username.into(),
+            password: password.into(),
+        }
+    }
+}
+
+impl AuthStrategy for BasicAuthStrategy {
+    fn prefix(&self) -> String {
+        "Basic".to_owned()
+    }
+
+    fn value(&self) -> String {
+        general_purpose::STANDARD.encode(format!("{}:{}", self.username, self.password))
+    }
+}
+
+impl From<(String, String)> for BasicAuthStrategy {
+    fn from((username, password): (String, String)) -> Self {
+        BasicAuthStrategy { username, password }
+    }
+}
+
+impl From<(&str, &str)> for BasicAuthStrategy {
+    fn from((username, password): (&str, &str)) -> Self {
+        BasicAuthStrategy {
+            username: username.to_owned(),
+            password: password.to_owned(),
+        }
+    }
+}

@@ -1,9 +1,8 @@
 {
-  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.base.schema.json",
-  "name": "charted-web",
+  "name": "charted-rust-sdk",
   "remoteUser": "noel",
   "containerUser": "noel",
-  "workspaceFolder": "/workspaces/web",
+  "workspaceFolder": "/workspaces/rust-sdk",
   "image": "ghcr.io/auguwu/coder-images/rust:latest",
   "features": {
     // JetBrains Gateway requires an SSH connection to be available, so,

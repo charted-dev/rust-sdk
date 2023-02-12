@@ -19,27 +19,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//! ## charted-server for Rust
-//!
-//!> *Rust SDK library for Noelware's Charts Platform*
-//!
-//! The **charted** crate is used to faciliate API calls to [charted-server](https://charts.noelware.org/docs/server/current),
-//! this library was mainly created for the [Helm plugin](https://github.com/charted-dev/helm-plugin), but made public for everyone
-//! to use when consuming the API.
-//!
-//! Read the [`APIClient`] struct for more information on how to use this struct to make requests
-//! to the API server.
-//!
-//! [`APIClient`]: struct.APIClient.html
+mod indexes;
 
-pub mod auth;
-pub mod models;
-
-mod builder;
-mod client;
-mod containers;
-mod error;
-
-pub use builder::*;
-pub use client::*;
-pub use error::*;
+pub use indexes::*;

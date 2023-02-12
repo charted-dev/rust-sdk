@@ -30,11 +30,19 @@ pub enum Error {
     #[error("Unknown error: {0}")]
     Unknown(#[from] Box<dyn std::error::Error>),
 
-    #[error("YAML serialization error: {0}")]
-    YamlSerialization(#[from] serde_yaml::Error),
+    #[error("YAML serialization error: {error}")]
+    YamlSerialization {
+        #[source]
+        error: serde_yaml::Error,
+        payload: String,
+    },
 
-    #[error("JSON serialization error: {0}")]
-    JsonSerialization(#[from] serde_json::Error),
+    #[error("JSON serialization error: {error}")]
+    JsonSerialization {
+        #[source]
+        error: serde_json::Error,
+        payload: String,
+    },
 
     #[error("Request error: {0}")]
     Reqwest(#[from] reqwest::Error),

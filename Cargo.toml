@@ -31,6 +31,7 @@ authors = ["Noelware Team <team@noelware.org>", "Noel <cutie@floofy.dev>"]
 [dependencies]
 async-trait = "0.1.61"
 base64 = "0.21.0"
+chrono = { version = "0.4.23", features = ["serde"] }
 log = "0.4.17"
 reqwest = { version = "0.11.13", features = ["json"] }
 serde = { version = "1.0.152", features = ["derive"] }

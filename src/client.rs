@@ -30,6 +30,7 @@ use serde::de::DeserializeOwned;
 
 use crate::{
     auth::AuthStrategy,
+    containers::IndexesContainer,
     models::{APIResponse, FeaturesResponse, InfoResponse, MainResponse},
     APIClientBuilder, Result,
 };
@@ -293,9 +294,12 @@ impl APIClient {
         body: Option<B>,
         headers: Option<HashMap<String, String>>,
     ) -> Result<U> {
-        self.request_text(endpoint, method, body, headers)
-            .await
-            .map(|data| serde_json::from_str(data.as_str()).map_err(crate::Error::JsonSerialization))?
+        self.request_text(endpoint, method, body, headers).await.map(|data| {
+            serde_json::from_str(data.as_str()).map_err(|e| crate::Error::JsonSerialization {
+                error: e,
+                payload: data,
+            })
+        })?
     }
 
     /// Performs a request where the response type will be deserialized from a YAML-body encoding, unless a [`Error::YamlSerialization`] error
@@ -308,9 +312,12 @@ impl APIClient {
         body: Option<B>,
         headers: Option<HashMap<String, String>>,
     ) -> Result<U> {
-        self.request_text(endpoint, method, body, headers)
-            .await
-            .map(|data| serde_yaml::from_str(data.as_str()).map_err(crate::Error::YamlSerialization))?
+        self.request_text(endpoint, method, body, headers).await.map(|data| {
+            serde_yaml::from_str(data.as_str()).map_err(|e| crate::Error::YamlSerialization {
+                error: e,
+                payload: data,
+            })
+        })?
     }
 
     // Internal method to create a Request to not repeat code
@@ -342,11 +349,27 @@ impl APIClient {
             }
         }
 
+        if let Some(h) = &self.headers {
+            for (key, value) in h {
+                headers_to_use.insert(
+                    HeaderName::from_str(key.clone().as_str()).map_err(|e| crate::Error::Unknown(Box::new(e)))?,
+                    HeaderValue::from_str(value.clone().as_str()).map_err(|e| crate::Error::Unknown(Box::new(e)))?,
+                );
+            }
+        }
+
         let _ = request.try_clone().map(|f| f.headers(headers_to_use));
         if let Some(b) = body {
             let _ = request.try_clone().map(|f| f.body::<B>(b));
         }
 
         request.build().map_err(crate::Error::Reqwest)
+    }
+}
+
+impl APIClient {
+    /// Creates a container to request to the Indexes API.
+    pub fn indexes(self) -> IndexesContainer {
+        IndexesContainer::new(self)
     }
 }

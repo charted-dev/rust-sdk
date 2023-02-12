@@ -19,11 +19,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+mod chart;
 mod main;
 mod response;
 
+pub use chart::*;
 pub use main::*;
 pub use response::*;
+
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+pub(crate) struct Empty;
 
 /// Represents the charted-server distribution type that it was built from.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

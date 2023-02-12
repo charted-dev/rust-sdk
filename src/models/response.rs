@@ -29,11 +29,9 @@ where
     pub success: bool,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
     pub data: Option<T>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
     pub errors: Option<Vec<ApiError>>,
 }
 
